@@ -1,0 +1,206 @@
+@startuml Pharmacy Management System
+
+' Title
+title Pharmacy Management System - UML Class Diagram
+
+' Package for models
+package "models" {
+  ' User classes hierarchy
+  abstract class User {
+    # String username
+    # String role
+    + User(String username, String role)
+    + String getUsername()
+    + String getRole()
+  }
+  
+  class Admin extends User {
+    + Admin(String username)
+  }
+  
+  class Customer extends User {
+    + Customer(String username)
+  }
+  
+  class Pharmacist extends User {
+    + Pharmacist(String username)
+  }
+  
+  ' Medicine class
+  class Medicine {
+    - String name
+    - int quantity
+    - double price
+    - String expiryDate
+    + Medicine(String name, int quantity, double price, String expiryDate)
+    + String getName()
+    + int getQuantity()
+    + double getPrice()
+    + String getExpiryDate()
+    + void setQuantity(int quantity)
+    + String toString()
+  }
+
+  ' Prescription class
+  class Prescription {
+    - String id
+    - String patientName
+    - String doctorName
+    - String medicineName
+    - int quantity
+    - String dosage
+    - LocalDate issueDate
+    - LocalDate expiryDate
+    - boolean processed
+    + Prescription(String patientName, String doctorName, String medicineName, int quantity, String dosage, LocalDate issueDate, LocalDate expiryDate)
+    + Prescription(String id, String patientName, String doctorName, String medicineName, int quantity, String dosage, LocalDate issueDate, LocalDate expiryDate, boolean processed)
+    + String getId()
+    + String getPatientName()
+    + String getDoctorName()
+    + String getMedicineName()
+    + int getQuantity()
+    + String getDosage()
+    + LocalDate getIssueDate()
+    + LocalDate getExpiryDate()
+    + boolean isProcessed()
+    + void setProcessed(boolean processed)
+    + boolean isExpired()
+    + boolean isValid()
+    + String toString()
+    + {static} Prescription fromString(String data)
+  }
+
+  ' Purchase class
+  class Purchase {
+    - String medicineName
+    - int quantity
+    - double price
+    - double total
+    - LocalDateTime purchaseTime
+    + Purchase(String medicineName, int quantity, double price, LocalDateTime purchaseTime)
+    + String getMedicineName()
+    + int getQuantity()
+    + double getPrice()
+    + double getTotal()
+    + LocalDateTime getPurchaseTime()
+    + String getFormattedTime()
+    + String toString()
+    + {static} Purchase fromString(String line)
+  }
+
+  ' Supplier class
+  class Supplier {
+    - String name
+    - String phone
+    - String address
+    - String suppliedMedicines
+    + Supplier(String name, String phone, String address, String suppliedMedicines)
+    + String getName()
+    + String getPhone()
+    + String getAddress()
+    + String getSuppliedMedicines()
+    + void setName(String name)
+    + void setPhone(String phone)
+    + void setAddress(String address)
+    + void setSuppliedMedicines(String suppliedMedicines)
+    + String toString()
+    + {static} Supplier fromString(String line)
+  }
+}
+
+' Package for utils
+package "utils" {
+  class UserManager {
+    - {static} String FILE
+    + {static} void bootstrap()
+    + {static} String[][] getAllUsers()
+    + {static} boolean checkAdmin(String username, String password)
+    + {static} void updateAdminCreds(String newUser, String newPass)
+    - {static} List<String> loadAll()
+    - {static} void saveAll(List<String> lines)
+    + {static} String checkCredentials(String username, String password)
+    + {static} boolean createUser(String username, String password, String role)
+    - {static} boolean usernameExists(String username)
+    + {static} boolean deleteUser(int index)
+    + {static} boolean updateUser(int index, String username, String password, String role)
+  }
+  
+  class MedicineManager {
+    - {static} String MEDICINE_FILE
+    + {static} List<String[]> loadAll()
+    + {static} void addMedicine(String name, int quantity, double price, LocalDate expiryDate)
+    + {static} void updateMedicine(int index, String name, int quantity, double price, LocalDate expiryDate)
+    + {static} void deleteMedicine(int index)
+    + {static} boolean medicineExists(String name)
+  }
+  
+  class FileManager {
+    ' Assumed to handle general file operations
+  }
+  
+  class PurchaseManager {
+    ' Handles purchase operations
+  }
+  
+  class SupplierManager {
+    ' Handles supplier operations
+  }
+}
+
+' Package for GUI components
+package "gui" {
+  class LoginScreen {
+    ' Login screen UI
+  }
+  
+  class AdminDashboard {
+    ' Admin dashboard UI
+  }
+  
+  class CustomerDashboard {
+    ' Customer dashboard UI
+  }
+  
+  class PharmacistDashboard {
+    ' Pharmacist dashboard UI
+  }
+}
+
+' Main class
+class Main {
+  + {static} void main(String[] args)
+}
+
+' Relationships
+Main --> LoginScreen : uses
+Main --> UserManager : uses
+
+LoginScreen ..> AdminDashboard : creates
+LoginScreen ..> CustomerDashboard : creates
+LoginScreen ..> PharmacistDashboard : creates
+LoginScreen ..> UserManager : uses
+
+UserManager ..> User : creates
+UserManager ..> Admin : creates
+UserManager ..> Customer : creates
+UserManager ..> Pharmacist : creates
+
+MedicineManager ..> Medicine : creates/manages
+
+PurchaseManager ..> Purchase : creates/manages
+PurchaseManager ..> Medicine : uses
+
+SupplierManager ..> Supplier : creates/manages
+
+AdminDashboard ..> UserManager : uses
+AdminDashboard ..> MedicineManager : uses
+AdminDashboard ..> SupplierManager : uses
+
+PharmacistDashboard ..> MedicineManager : uses
+PharmacistDashboard ..> PurchaseManager : uses
+PharmacistDashboard ..> Prescription : uses
+
+CustomerDashboard ..> PurchaseManager : uses
+CustomerDashboard ..> Medicine : uses
+
+@enduml

@@ -1,7 +1,9 @@
 // AdminDashboard.java
 package gui;
 
+import models.Supplier;
 import utils.MedicineManager;
+import utils.SupplierManager;
 import utils.UserManager;
 
 import javax.swing.*;
@@ -9,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.DateTimeException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdminDashboard extends JFrame {
@@ -289,12 +292,133 @@ public class AdminDashboard extends JFrame {
         tabs.addTab("Manage Users", userPanel);
 
         // ===== Supplier Management Tab =====
-        JPanel supplierTabPanel = new JPanel(new BorderLayout());
-        JButton openSupplierWindow = new JButton("Open Supplier Management");
-        openSupplierWindow.setFont(new Font("Arial", Font.BOLD, 14));
-        openSupplierWindow.addActionListener(e -> new SupplierManagement().setVisible(true));
-        supplierTabPanel.add(openSupplierWindow, BorderLayout.CENTER);
-        tabs.addTab("Supplier Management", supplierTabPanel);
+        // Past Code
+        // JPanel supplierTabPanel = new JPanel(new BorderLayout());
+        // JButton openSupplierWindow = new JButton("Open Supplier Management");
+        // openSupplierWindow.setFont(new Font("Arial", Font.BOLD, 14));
+        // openSupplierWindow.addActionListener(e -> new SupplierManagement().setVisible(true));
+        // supplierTabPanel.add(openSupplierWindow, BorderLayout.CENTER);
+        // tabs.addTab("Supplier Management", supplierTabPanel);
+        // End of Past code
+
+        // ===== Supplier Management Tab =====
+        JPanel supplierPanel = new JPanel(new BorderLayout());
+        
+        // Table setup
+        DefaultTableModel supplierTableModel = new DefaultTableModel(new String[]{"Name", "Phone", "Address", "Medicines"}, 0);
+        JTable supplierTable = new JTable(supplierTableModel);
+        JScrollPane supplierScrollPane = new JScrollPane(supplierTable);
+        supplierScrollPane.setPreferredSize(new Dimension(700, 200));
+        supplierPanel.add(supplierScrollPane, BorderLayout.CENTER);
+        
+        // Form panel
+        JPanel supplierFormPanel = new JPanel(new GridLayout(5, 2, 10, 5));
+        supplierFormPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        JTextField supplierNameField = new JTextField();
+        JTextField supplierPhoneField = new JTextField();
+        JTextField supplierAddressField = new JTextField();
+        JTextField supplierMedicinesField = new JTextField();
+        
+        supplierFormPanel.add(new JLabel("Name:"));
+        supplierFormPanel.add(supplierNameField);
+        supplierFormPanel.add(new JLabel("Phone:"));
+        supplierFormPanel.add(supplierPhoneField);
+        supplierFormPanel.add(new JLabel("Address:"));
+        supplierFormPanel.add(supplierAddressField);
+        supplierFormPanel.add(new JLabel("Medicines:"));
+        supplierFormPanel.add(supplierMedicinesField);
+        
+        // Button panel
+        JPanel supplierButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
+        JButton addButton = new JButton("Add Supplier");
+        JButton deleteButton = new JButton("Delete Selected");
+        JButton saveButton = new JButton("Save All");
+        
+        // Load supplier data
+        ArrayList<Supplier> suppliers = SupplierManager.loadSuppliers();
+        
+        // Refresh table helper method (as local function)
+        Runnable refreshSupplierTable = () -> {
+            supplierTableModel.setRowCount(0);
+            for (Supplier s : suppliers) {
+                supplierTableModel.addRow(new Object[]{
+                    s.getName(), s.getPhone(), s.getAddress(), s.getSuppliedMedicines()
+                });
+            }
+        };
+        
+        // Initial table population
+        refreshSupplierTable.run();
+        
+        // Clear fields helper method
+        Runnable clearFields = () -> {
+            supplierNameField.setText("");
+            supplierPhoneField.setText("");
+            supplierAddressField.setText("");
+            supplierMedicinesField.setText("");
+        };
+        
+        // Add button action
+        addButton.addActionListener(e -> {
+            String name = supplierNameField.getText().trim();
+            String phone = supplierPhoneField.getText().trim();
+            String address = supplierAddressField.getText().trim();
+            String meds = supplierMedicinesField.getText().trim();
+            
+            if (name.isEmpty() || phone.isEmpty() || address.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "❌ Please fill all fields.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            // Prevent duplicate names
+            for (Supplier s : suppliers) {
+                if (s.getName().equalsIgnoreCase(name)) {
+                    JOptionPane.showMessageDialog(this, "❌ Supplier with this name already exists.", "Duplicate", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            }
+            
+            Supplier supplier = new Supplier(name, phone, address, meds);
+            suppliers.add(supplier);
+            refreshSupplierTable.run();
+            clearFields.run();
+            JOptionPane.showMessageDialog(this, "✅ Supplier added successfully.");
+        });
+        
+        // Delete button action
+        deleteButton.addActionListener(e -> {
+            int selectedRow = supplierTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this supplier?", "Confirm", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    suppliers.remove(selectedRow);
+                    refreshSupplierTable.run();
+                    JOptionPane.showMessageDialog(this, "🗑️ Supplier deleted.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "❌ Select a supplier to delete.");
+            }
+        });
+        
+        // Save button action
+        saveButton.addActionListener(e -> {
+            SupplierManager.saveSuppliers(suppliers);
+            JOptionPane.showMessageDialog(this, "✅ Suppliers saved successfully.");
+        });
+        
+        supplierButtonPanel.add(addButton);
+        supplierButtonPanel.add(deleteButton);
+        supplierButtonPanel.add(saveButton);
+        
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.add(supplierFormPanel, BorderLayout.CENTER);
+        bottomPanel.add(supplierButtonPanel, BorderLayout.SOUTH);
+        
+        supplierPanel.add(bottomPanel, BorderLayout.SOUTH);
+        
+        // Add the supplier panel to the tabs
+        tabs.addTab("Supplier Management", supplierPanel);
 
         // ===== Sales History Tab =====
         JPanel salesPanel = new JPanel(new BorderLayout());

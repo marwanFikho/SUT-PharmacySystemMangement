@@ -1,0 +1,2 @@
+Medicine Company A||0100000001||6 Street Medicine Road||Betadin
+Medicine Company B||010000002||Where the compnay B||Some Medicines

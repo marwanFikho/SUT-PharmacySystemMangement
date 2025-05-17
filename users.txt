@@ -1,3 +1,2 @@
 admin,admin,Admin
-pharm,pharm,Pharmacist
-Cust,Cust,Customer
+fikho,fikho,Pharmacist
