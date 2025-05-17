@@ -73,8 +73,9 @@ public class AdminDashboard extends JFrame {
         JButton addBtn = new JButton("Add");
         JButton editBtn = new JButton("Edit");
         JButton delBtn = new JButton("Delete");
+        JButton clearBtn = new JButton("Clear Form");
         JPanel medicineButtonPanel = new JPanel();
-        medicineButtonPanel.add(addBtn); medicineButtonPanel.add(editBtn); medicineButtonPanel.add(delBtn);
+        medicineButtonPanel.add(addBtn); medicineButtonPanel.add(editBtn); medicineButtonPanel.add(delBtn); medicineButtonPanel.add(clearBtn);
 
         List<String[]> allMeds = MedicineManager.loadAll();
         for (String[] med : allMeds) medModel.addRow(med);
@@ -146,6 +147,14 @@ public class AdminDashboard extends JFrame {
             JOptionPane.showMessageDialog(this, "🗑️ Deleted.");
         });
 
+        clearBtn.addActionListener(e -> {
+            nameField.setText("");
+            quantityField.setText("");
+            priceField.setText("");
+            expiryField.setText("");
+            medTable.clearSelection();
+        });
+
         medTable.getSelectionModel().addListSelectionListener(e -> {
             int row = medTable.getSelectedRow();
             if (row != -1) {
@@ -155,7 +164,7 @@ public class AdminDashboard extends JFrame {
                 expiryField.setText(medModel.getValueAt(row, 3).toString());
             }
         });
-
+        
         inventoryPanel.add(medScroll, BorderLayout.CENTER);
         inventoryPanel.add(formPanel, BorderLayout.NORTH);
         inventoryPanel.add(medicineButtonPanel, BorderLayout.SOUTH);
@@ -290,17 +299,8 @@ public class AdminDashboard extends JFrame {
         userPanel.add(userScroll, BorderLayout.CENTER);
         userPanel.add(userButtonPanel, BorderLayout.SOUTH);
         tabs.addTab("Manage Users", userPanel);
-
-        // ===== Supplier Management Tab =====
-        // Past Code
-        // JPanel supplierTabPanel = new JPanel(new BorderLayout());
-        // JButton openSupplierWindow = new JButton("Open Supplier Management");
-        // openSupplierWindow.setFont(new Font("Arial", Font.BOLD, 14));
-        // openSupplierWindow.addActionListener(e -> new SupplierManagement().setVisible(true));
-        // supplierTabPanel.add(openSupplierWindow, BorderLayout.CENTER);
-        // tabs.addTab("Supplier Management", supplierTabPanel);
-        // End of Past code
-
+        
+        
         // ===== Supplier Management Tab =====
         JPanel supplierPanel = new JPanel(new BorderLayout());
         

@@ -1,4 +1,3 @@
-// gui/LoginScreen.java
 package gui;
 
 import utils.UserManager;
@@ -11,7 +10,7 @@ public class LoginScreen extends JFrame {
         setSize(300, 200);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(4, 1));
+        setLayout(new GridLayout(4, 2));
 
         JTextField userField = new JTextField();
         JPasswordField passField = new JPasswordField();

@@ -20,7 +20,6 @@ public class CustomerDashboard extends JFrame {
         JPanel topPanel = new JPanel(new BorderLayout());
         JLabel welcomeLabel = new JLabel("Welcome Customer!", SwingConstants.CENTER);
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        welcomeLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         
         JButton logoutButton = new JButton("Logout");
         logoutButton.addActionListener(e -> {
@@ -57,7 +56,7 @@ public class CustomerDashboard extends JFrame {
 
     // Refresh the medicine list in the text area
     private void refreshMedicineList(JTextArea textArea) {
-        textArea.setText("🛒 Available Medicines to Buy:\n\n" + FileManager.getMedicineListAsString());
+        textArea.setText("  Available Medicines to Buy:\n\n" + FileManager.getMedicineListAsString());
     }
 
     // Show the buy dialog
@@ -69,9 +68,7 @@ public class CustomerDashboard extends JFrame {
             return;
         }
 
-        String[] medicineNames = medicines.stream()
-            .map(Medicine::getName)
-            .toArray(String[]::new);
+        String[] medicineNames = medicines.stream().map(Medicine::getName).toArray(String[]::new);
 
         JComboBox<String> medicineBox = new JComboBox<>(medicineNames);
         JTextField quantityField = new JTextField();
@@ -84,7 +81,7 @@ public class CustomerDashboard extends JFrame {
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Buy Medicine", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
-            String selectedMedicine = (String) medicineBox.getSelectedItem();
+            String selectedMedicine = medicineBox.getSelectedItem().toString();
             int quantity;
 
             try {
@@ -95,10 +92,7 @@ public class CustomerDashboard extends JFrame {
                 return;
             }
 
-            Medicine selected = medicines.stream()
-                .filter(m -> m.getName().equals(selectedMedicine))
-                .findFirst()
-                .orElse(null);
+            Medicine selected = medicines.stream().filter(m -> m.getName().equals(selectedMedicine)).findFirst().orElse(null);
 
             if (selected != null && quantity <= selected.getQuantity()) {
                 boolean success = PurchaseManager.recordPurchase(selected.getName(), quantity, selected.getPrice());

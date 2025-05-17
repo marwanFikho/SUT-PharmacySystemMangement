@@ -78,7 +78,7 @@ public class PharmacistDashboard extends JFrame {
         salePanel.add(formPanel, BorderLayout.NORTH);
         salePanel.add(statusLabel, BorderLayout.CENTER);
         
-        // Instructions panel
+        
         JTextArea instructionsArea = new JTextArea();
         instructionsArea.setEditable(false);
         instructionsArea.setLineWrap(true);
@@ -97,7 +97,7 @@ public class PharmacistDashboard extends JFrame {
         bottomPanel.add(salePanel, BorderLayout.CENTER);
         bottomPanel.add(instructionsArea, BorderLayout.SOUTH);
         
-        // Add all components to frame
+        
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);

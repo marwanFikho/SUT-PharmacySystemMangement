@@ -3,18 +3,9 @@ package utils;
 import java.io.*;
 import java.util.*;
 
-/**
- * Very small user-store:
- * ─ one line per user   →  username,password,role
- * ─ only ONE line may have role = Admin
- * File is created with default  admin,admin,Admin  if it doesn’t exist.
- */
 public class UserManager {
     private static final String FILE = "users.txt";
 
-    /* ─────────────────────────  PUBLIC API  ───────────────────────── */
-
-    /** Ensure file exists with the default admin if missing. */
     public static void bootstrap() {
         File f = new File(FILE);
         if (!f.exists()) {
@@ -59,8 +50,6 @@ public class UserManager {
         }
         saveAll(all);
     }
-
-    /* ───────────────────────  internal helpers  ───────────────────── */
 
     private static List<String> loadAll() {
         List<String> out = new ArrayList<>();
@@ -139,18 +128,9 @@ public class UserManager {
         if (!parts[0].equals(username) && usernameExists(username)) {
             return false;
         }
-        
-        // Don't allow changing Admin role
-        if (isAdmin && !role.equals("Admin")) {
-            return false;
-        }
-        
-        // Don't allow changing to Admin role
-        if (!isAdmin && role.equals("Admin")) {
-            return false;
-        }
-        
-        users.set(index, username + "," + password + "," + role);
+        if(isAdmin) users.set(index, username + "," + password + "," + "Admin");
+        else users.set(index, username + "," + password + "," + role);
+
         saveAll(users);
         return true;
     }

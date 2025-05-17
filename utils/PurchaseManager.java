@@ -20,6 +20,7 @@ public class PurchaseManager {
      * @param price Price per unit
      * @return true if purchase was recorded successfully
      */
+
     public static boolean recordPurchase(String medicineName, int quantity, double price) {
         // Update medicine quantity in file
         boolean success = updateMedicineQuantity(medicineName, quantity);
@@ -45,27 +46,20 @@ public class PurchaseManager {
      * @param quantityPurchased Quantity sold
      * @return true if successful
      */
+
     private static boolean updateMedicineQuantity(String medicineName, int quantityPurchased) {
         List<Medicine> medicines = FileManager.loadMedicines();
-        boolean found = false;
 
         for (Medicine medicine : medicines) {
             if (medicine.getName().equals(medicineName)) {
-                int newQuantity = medicine.getQuantity() - quantityPurchased;
-                if (newQuantity < 0) {
-                    return false; // Not enough stock
-                }
-                medicine.setQuantity(newQuantity);
-                found = true;
+                medicine.setQuantity(medicine.getQuantity() - quantityPurchased);
                 break;
             }
         }
 
-        if (!found) {
-            return false;
-        }
-
         // Update the medicines file
+        // inconvenient and time consuming, but this is the easiest solution, We could use SQLite to get the same outcome in less time.
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(MEDICINE_FILE))) {
             for (Medicine medicine : medicines) {
                 writer.write(medicine.toString());
@@ -82,6 +76,7 @@ public class PurchaseManager {
      * Load all purchases from file
      * @return List of purchases
      */
+
     public static List<Purchase> loadAllPurchases() {
         List<Purchase> purchases = new ArrayList<>();
         File file = new File(PURCHASE_FILE);
@@ -106,17 +101,18 @@ public class PurchaseManager {
      * Calculate total revenue from all purchases
      * @return Total revenue
      */
+
     public static double getTotalRevenue() {
         List<Purchase> purchases = loadAllPurchases();
-        return purchases.stream()
-                .mapToDouble(Purchase::getTotal)
-                .sum();
+        return purchases.stream().mapToDouble(Purchase::getTotal).sum();
     }
 
+    
     /**
      * Format purchases as a readable string for display
      * @return Formatted string of purchases
      */
+
     public static String getPurchasesAsString() {
         List<Purchase> purchases = loadAllPurchases();
         StringBuilder sb = new StringBuilder();

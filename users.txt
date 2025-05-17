@@ -1,2 +1,2 @@
 admin,admin,Admin
-fikho,fikho,Pharmacist
+123,123,Pharmacist

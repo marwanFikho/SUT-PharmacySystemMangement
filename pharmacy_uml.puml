@@ -41,35 +41,6 @@ package "models" {
     + String toString()
   }
 
-  ' Prescription class
-  class Prescription {
-    - String id
-    - String patientName
-    - String doctorName
-    - String medicineName
-    - int quantity
-    - String dosage
-    - LocalDate issueDate
-    - LocalDate expiryDate
-    - boolean processed
-    + Prescription(String patientName, String doctorName, String medicineName, int quantity, String dosage, LocalDate issueDate, LocalDate expiryDate)
-    + Prescription(String id, String patientName, String doctorName, String medicineName, int quantity, String dosage, LocalDate issueDate, LocalDate expiryDate, boolean processed)
-    + String getId()
-    + String getPatientName()
-    + String getDoctorName()
-    + String getMedicineName()
-    + int getQuantity()
-    + String getDosage()
-    + LocalDate getIssueDate()
-    + LocalDate getExpiryDate()
-    + boolean isProcessed()
-    + void setProcessed(boolean processed)
-    + boolean isExpired()
-    + boolean isValid()
-    + String toString()
-    + {static} Prescription fromString(String data)
-  }
-
   ' Purchase class
   class Purchase {
     - String medicineName
@@ -135,34 +106,50 @@ package "utils" {
   }
   
   class FileManager {
-    ' Assumed to handle general file operations
+    - {static} String File
+    + {static} List<Medicine> loadMedicines()
+    + {static} void saveMedicines(Medicine medicine)
+    + {static} String getMedicineListAsString()
   }
   
   class PurchaseManager {
-    ' Handles purchase operations
+    - {static} String PURCHASE_FILE
+    - {static} String MEDICINE_FILE
+    + {static} boolean recordPurchase(String medicineName, int quantity, double price)
+    - {static} boolean updateMedicineQuantity(String medicineName, int quantityPurchased)
+    + {static} List<Purchase> loadAllPurchases()
+    + {static} double getTotalRevenue()
+    + {static} String getPurchasesAsString()
+    + {static} boolean resetPurchaseHistory()
   }
   
   class SupplierManager {
-    ' Handles supplier operations
+    - {static} String FILE_NAME
+    + {static} ArrayList<Supplier> loadSuppliers()
+    + {static} void saveSuppliers(ArrayList<Supplier> suppliers)
   }
 }
 
 ' Package for GUI components
 package "gui" {
   class LoginScreen {
-    ' Login screen UI
+    + LoginScreen()
   }
   
   class AdminDashboard {
-    ' Admin dashboard UI
+    + AdminDashboard()
   }
   
   class CustomerDashboard {
-    ' Customer dashboard UI
+    + CustomerDashboard()
+    - void refreshMedicineList(JTextArea textArea)
+    - void showBuyDialog(JTextArea textArea)
   }
   
   class PharmacistDashboard {
-    ' Pharmacist dashboard UI
+    + PharmacistDashboard()
+    - void loadMedicineTable()
+    - void sellMedicine(ActionEvent e)
   }
 }
 
@@ -198,9 +185,10 @@ AdminDashboard ..> SupplierManager : uses
 
 PharmacistDashboard ..> MedicineManager : uses
 PharmacistDashboard ..> PurchaseManager : uses
-PharmacistDashboard ..> Prescription : uses
+PharmacistDashboard ..> FileManager : uses
 
 CustomerDashboard ..> PurchaseManager : uses
 CustomerDashboard ..> Medicine : uses
+CustomerDashboard ..> FileManager : uses
 
 @enduml
